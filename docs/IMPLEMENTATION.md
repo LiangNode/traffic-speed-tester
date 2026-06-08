@@ -12,7 +12,7 @@
 - `/`：测速页面
 - `/api/health`：服务健康检查，返回 `service: traffic-speed-tester`
 - `/api/ip`：基于请求 IP 查询访客网络信息
-- `/api/download?size=10m|50m|100m`：本机测试包
+- `/api/download?size=1m|4m`：轻量本机测试包，最大 4MB
 - `/api/upload`：预留上传统计接口
 
 ## 浏览器测速限制

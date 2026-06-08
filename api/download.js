@@ -2,7 +2,7 @@ import { parseSize } from './_utils.js';
 
 export default async function handler(req, res) {
   // Vercel Serverless is not intended for large generated files.
-  // Keep this endpoint lightweight; use Docker self-hosting for 10MB/50MB/100MB local test packages.
+  // Keep this endpoint lightweight; large traffic tests should use external CORS-readable sources.
   const size = Math.min(parseSize(req.query?.size), 4 * 1024 * 1024);
   res.statusCode = 200;
   res.setHeader('Content-Type', 'application/octet-stream');

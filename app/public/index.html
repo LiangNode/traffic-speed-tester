@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>流量测速器</title>
-  <link rel="stylesheet" href="/styles.css?v=2026060815" />
+  <link rel="stylesheet" href="/styles.css?v=2026060816" />
 </head>
 <body>
   <main class="shell">
@@ -55,14 +55,12 @@
         <label class="field">
           <span>测试地址</span>
           <select id="presetUrl">
-            <optgroup label="本机源（推荐，稳定可测）">
-              <option value="/api/download?size=10m">本机 10MB 测试包</option>
-              <option value="/api/download?size=50m" selected>本机 50MB 测试包</option>
-              <option value="/api/download?size=100m">本机 100MB 测试包</option>
+            <optgroup label="本机源（轻量测试）">
+              <option value="/api/download?size=1m">本机 1MB 测试包</option>
+              <option value="/api/download?size=4m" selected>本机 4MB 测试包</option>
             </optgroup>
             <optgroup label="外部源（已验证支持浏览器测速）">
               <option value="https://cachefly.cachefly.net/10mb.test">CacheFly 10MB</option>
-              <option value="https://cachefly.cachefly.net/100mb.test">CacheFly 100MB</option>
             </optgroup>
             <optgroup label="参考源（已验证可被浏览器读取）">
               <option value="https://issuecdn.baidupcs.com/issue/netdisk/apk/BaiduNetdiskSetup_wap_share.apk">百度网盘安装包 189MB</option>
@@ -110,7 +108,7 @@
           <button id="resetBtn">清空数据</button>
         </div>
 
-        <p class="hint">说明：已加入参考源，并只把可被浏览器读取的源设为可选。自定义地址必须允许跨域，否则浏览器无法读取实时速度。</p>
+        <p class="hint">说明：项目以后以 Vercel 部署为主，本机源仅保留轻量测试包；大流量测速建议使用外部 CORS 可读源或自定义地址。</p>
       </section>
 
       <section class="dashboard">
@@ -142,6 +140,6 @@
     </section>
   </main>
 
-  <script src="/app.js?v=2026060815"></script>
+  <script src="/app.js?v=2026060816"></script>
 </body>
 </html>

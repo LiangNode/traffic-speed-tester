@@ -41,11 +41,11 @@ const carriers = [
 
 const links = [
   {
-    name: 'CacheFly 100MB',
-    url: 'https://cachefly.cachefly.net/100mb.test',
+    name: 'CacheFly 10MB',
+    url: 'https://cachefly.cachefly.net/10mb.test',
     category: '直链下载',
-    desc: '国际 CDN 100MB 测试文件，适合浏览器下载测速参考',
-    tags: ['100MB', 'CDN', '下载']
+    desc: '国际 CDN 10MB 测试文件，适合浏览器下载测速参考',
+    tags: ['10MB', 'CDN', '下载']
   },
   {
     name: 'Speedtest by Ookla',
@@ -192,10 +192,10 @@ async function carrierLatency(carrier) {
 }
 
 function parseSize(value) {
-  const v = String(value || '10m').toLowerCase();
+  const v = String(value || '1m').toLowerCase();
   const m = v.match(/^(\d+)(k|m)?$/);
   if (!m) return 10 * 1024 * 1024;
-  const n = Math.max(1, Math.min(Number(m[1]), 100));
+  const n = Math.max(1, Math.min(Number(m[1]), 4));
   return m[2] === 'k' ? n * 1024 : n * 1024 * 1024;
 }
 
