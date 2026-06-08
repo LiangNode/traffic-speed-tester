@@ -4,7 +4,7 @@
 
 ![Traffic Speed Tester](docs/preview-note.svg)
 
-> 在线 Demo：<https://tst.vsse.net/>
+> 在线 Demo：<a href="https://tst.vsse.net/" target="_blank" rel="noopener noreferrer">https://tst.vsse.net/</a>
 
 ## 项目简介
 
