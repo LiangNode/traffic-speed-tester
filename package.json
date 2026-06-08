@@ -1,0 +1,14 @@
+{
+  "name": "traffic-speed-tester",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node app/server.js",
+    "check": "node --check app/server.js && node --check api/health.js && node --check api/ip.js && node --check api/links.js && node --check api/download.js && node --check api/upload.js",
+    "build": "node scripts/prepare-vercel.js"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

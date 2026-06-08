@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="Traffic Speed Tester preview">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#020617"/>
+      <stop offset="0.55" stop-color="#07111f"/>
+      <stop offset="1" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="line" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#38bdf8"/>
+      <stop offset="1" stop-color="#22c55e"/>
+    </linearGradient>
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="18" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <circle cx="160" cy="90" r="190" fill="#38bdf8" opacity="0.18" filter="url(#glow)"/>
+  <circle cx="1030" cy="90" r="180" fill="#22c55e" opacity="0.14" filter="url(#glow)"/>
+  <rect x="90" y="90" width="1020" height="450" rx="36" fill="rgba(15,23,42,.82)" stroke="rgba(148,163,184,.25)"/>
+  <text x="140" y="170" fill="#38bdf8" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="800" letter-spacing="4">TRAFFIC SPEED TESTER</text>
+  <text x="140" y="255" fill="#e5e7eb" font-family="Inter, Arial, sans-serif" font-size="68" font-weight="900">流量测速器</text>
+  <text x="140" y="315" fill="#94a3b8" font-family="Inter, Arial, sans-serif" font-size="28">Browser speed test · IP info · latency dashboard</text>
+  <polyline points="140,430 230,385 320,405 430,320 540,350 650,265 760,300 900,210 1040,245" fill="none" stroke="url(#line)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+  <g fill="#e5e7eb" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="800">
+    <text x="145" y="485">Realtime Speed</text>
+    <text x="410" y="485">Mbps</text>
+    <text x="610" y="485">Visitor IP</text>
+    <text x="840" y="485">Latency</text>
+  </g>
+</svg>

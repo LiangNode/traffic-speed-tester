@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>流量测速器</title>
+  <link rel="stylesheet" href="/styles.css?v=2026060815" />
+</head>
+<body>
+  <main class="shell">
+    <section class="hero glass">
+      <p class="eyebrow">Traffic Speed Tester</p>
+      <h1>流量测速器</h1>
+      <p class="subtitle">选择测试地址、线程和目标流量后，在本页直接运行测速，并实时显示速度、带宽和曲线。</p>
+    </section>
+
+
+    <section class="network-card glass">
+      <div class="network-hero">
+        <div>
+          <p class="eyebrow mini">Visitor Network</p>
+          <h2>访客网络与网站延时</h2>
+          <p class="section-desc">访客 IP，从访客浏览器侧探测国内 / 国外常用网站访问耗时。</p>
+        </div>
+        <button id="refreshSiteLatency" class="small-btn">刷新延时</button>
+      </div>
+
+      <div class="visitor-row">
+        <article class="visitor-ip primary-ip">
+          <div class="ip-glow"></div>
+          <span>访客 IP</span>
+          <strong id="visitorIp">查询中…</strong>
+          <em id="visitorMeta">正在查询归属地和运营商</em>
+        </article>
+        <article class="visitor-ip latency-summary">
+          <span>平均延时</span>
+          <strong id="siteLatencyAvg">-</strong>
+          <em>统计成功探测的网站</em>
+        </article>
+      </div>
+
+      <div id="siteLatencyGrid" class="site-latency-grid">
+        <div class="empty-line">延时数据加载中…</div>
+      </div>
+      <p class="hint latency-hint">浏览器无法直接 ICMP Ping，这里用 HTTPS 请求耗时估算；部分站点可能因网络策略或跨域限制显示失败。</p>
+    </section>
+
+    <section class="layout">
+      <section class="settings glass">
+        <div class="section-title">
+          <h2>测试设置</h2>
+          <span id="ipInfo">IP 查询中…</span>
+        </div>
+
+        <label class="field">
+          <span>测试地址</span>
+          <select id="presetUrl">
+            <optgroup label="本机源（推荐，稳定可测）">
+              <option value="/api/download?size=10m">本机 10MB 测试包</option>
+              <option value="/api/download?size=50m" selected>本机 50MB 测试包</option>
+              <option value="/api/download?size=100m">本机 100MB 测试包</option>
+            </optgroup>
+            <optgroup label="外部源（已验证支持浏览器测速）">
+              <option value="https://cachefly.cachefly.net/10mb.test">CacheFly 10MB</option>
+              <option value="https://cachefly.cachefly.net/100mb.test">CacheFly 100MB</option>
+            </optgroup>
+            <optgroup label="参考源（已验证可被浏览器读取）">
+              <option value="https://issuecdn.baidupcs.com/issue/netdisk/apk/BaiduNetdiskSetup_wap_share.apk">百度网盘安装包 189MB</option>
+              <option value="https://img.alicdn.com/imgextra/i1/O1CN01xA4P9S1JsW2WEg0e1_!!6000000001084-2-tps-2880-560.png">阿里图片 CDN 1.8MB</option>
+              <option value="https://wegame.gtimg.com/g.55555-r.c4663/wegame-home/sc02-03.514d7db8.png">腾讯 WeGame 图片 814KB</option>
+              <option value="https://wwwstatic.vivo.com.cn/vivoportal/files/resource/funtouch/1651200648928/images/os2-jude-video.mp4">vivo 视频 4.2MB</option>
+              <option value="https://img.cmvideo.cn/publish/noms/2022/10/14/1O3VIGPVP6HTS.jpg">咪咕图片</option>
+              <option value="https://img.mcloud.139.com/material_prod/material_media/20221128/1669626861087.png">移动云图片 1.1MB</option>
+              <option value="https://i2.hdslb.com/bfs/openplatform/202506/ndIMphTF1750406775833.png">B站开放平台图片 368KB</option>
+            </optgroup>
+            <option value="custom">自定义地址（需允许跨域）</option>
+          </select>
+        </label>
+
+        <label class="field" id="customWrap">
+          <span>自定义地址</span>
+          <input id="customUrl" placeholder="https://example.com/file.bin" />
+        </label>
+
+        <div class="two-cols">
+          <label class="field">
+            <span>线程</span>
+            <input id="threads" type="number" min="1" max="64" value="8" />
+          </label>
+          <label class="field">
+            <span>总流量</span>
+            <select id="trafficLimit">
+              <option value="104857600">100 MB</option>
+              <option value="524288000" selected>500 MB</option>
+              <option value="1073741824">1 GB</option>
+              <option value="5368709120">5 GB</option>
+              <option value="0">不限，手动停止</option>
+            </select>
+          </label>
+        </div>
+
+        <label class="check">
+          <input id="keepRunning" type="checkbox" />
+          <span>达到总流量后继续后台运行，直到手动停止</span>
+        </label>
+
+        <div class="actions">
+          <button id="startBtn" class="primary">开始测试</button>
+          <button id="stopBtn" disabled>停止</button>
+          <button id="resetBtn">清空数据</button>
+        </div>
+
+        <p class="hint">说明：已加入参考源，并只把可被浏览器读取的源设为可选。自定义地址必须允许跨域，否则浏览器无法读取实时速度。</p>
+      </section>
+
+      <section class="dashboard">
+        <article class="metric glass">
+          <span>总流量</span>
+          <strong id="totalTraffic">-</strong>
+        </article>
+        <article class="metric glass">
+          <span>实时速度</span>
+          <strong id="liveSpeed">-</strong>
+        </article>
+        <article class="metric glass">
+          <span>带宽</span>
+          <strong id="bandwidth">-</strong>
+        </article>
+        <article class="metric glass">
+          <span>运行状态</span>
+          <strong id="status">待开始</strong>
+        </article>
+      </section>
+    </section>
+
+    <section class="chart-card glass">
+      <div class="section-title">
+        <h2>实时图表</h2>
+        <span><b class="dot speed"></b>速率 <b class="dot latency"></b>延迟</span>
+      </div>
+      <canvas id="chart" width="1400" height="360"></canvas>
+    </section>
+  </main>
+
+  <script src="/app.js?v=2026060815"></script>
+</body>
+</html>
