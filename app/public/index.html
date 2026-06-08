@@ -6,14 +6,20 @@
   <title>流量测速器</title>
   <link rel="icon" href="/favicon.ico" sizes="any" />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="/styles.css?v=2026060816" />
+  <link rel="stylesheet" href="/styles.css?v=2026060818" />
 </head>
 <body>
   <main class="shell">
     <section class="hero glass">
-      <p class="eyebrow">Traffic Speed Tester</p>
-      <h1>流量测速器</h1>
-      <p class="subtitle">选择测试地址、线程和目标流量后，在本页直接运行测速，并实时显示速度、带宽和曲线。</p>
+      <div class="hero-top">
+        <p class="eyebrow">Traffic Speed Tester</p>
+        <div class="language-switch" aria-label="Language switch">
+          <button id="langZh" type="button">中文</button>
+          <button id="langEn" type="button">EN</button>
+        </div>
+      </div>
+      <h1 id="pageTitle">流量测速器</h1>
+      <p id="pageSubtitle" class="subtitle">选择测试地址、线程和目标流量后，在本页直接运行测速，并实时显示速度、带宽和曲线。</p>
     </section>
 
 
@@ -140,8 +146,13 @@
       </div>
       <canvas id="chart" width="1400" height="360"></canvas>
     </section>
+
+    <footer class="site-footer glass">
+      <span id="projectLabel">项目地址</span>
+      <a href="https://github.com/LiangNode/traffic-speed-tester" target="_blank" rel="noopener noreferrer">github.com/LiangNode/traffic-speed-tester</a>
+    </footer>
   </main>
 
-  <script src="/app.js?v=2026060816"></script>
+  <script src="/app.js?v=2026060818"></script>
 </body>
 </html>
