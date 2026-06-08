@@ -1,24 +1,16 @@
-import { json, parseSize } from './_utils.js';
-
-function querySize(req) {
-  if (req.query?.size) return req.query.size;
-  try {
-    const url = new URL(req.url || '/', 'http://localhost');
-    return url.searchParams.get('size');
-  } catch {
-    return null;
-  }
-}
+import { allowMethods, parseSize, queryParam } from './_utils.js';
 
 export default async function handler(req, res) {
-  if (req.method && req.method !== 'GET') return json(res, { error: 'method_not_allowed' }, 405);
+  if (!allowMethods(req, res, ['GET', 'HEAD'])) return;
 
   // Keep this endpoint lightweight; large traffic tests should use external CORS-readable sources.
-  const size = Math.min(parseSize(querySize(req)), 4 * 1024 * 1024);
+  const size = parseSize(queryParam(req, 'size'));
   res.statusCode = 200;
   res.setHeader('Content-Type', 'application/octet-stream');
   res.setHeader('Content-Length', String(size));
   res.setHeader('Cache-Control', 'no-store');
+
+  if (req.method === 'HEAD') return res.end();
 
   const chunk = Buffer.alloc(64 * 1024, 7);
   let sent = 0;

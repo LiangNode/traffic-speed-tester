@@ -5,8 +5,6 @@
 ![Traffic Speed Tester](docs/preview-note.svg)
 
 > 在线 Demo：[https://tst.vsse.net/](https://tst.vsse.net/)
->
-> 说明：GitHub README 会忽略链接的 `target="_blank"`，如需新标签页打开，请使用 Ctrl/⌘ + 点击或鼠标中键。
 
 ## 项目简介
 
@@ -14,7 +12,7 @@ Traffic Speed Tester 适合用于：
 
 - 快速部署公开测速页面
 - 临时测试浏览器侧下载速度
-- 查看实时速度、Mbps 带宽和累计流量
+- 查看实时速度、Mbps 带宽、累计流量和趋势图表
 - 查看访客公网 IP、归属地、运营商和 ASN
 - 从访客浏览器侧估算国内 / 国外常用网站访问耗时
 

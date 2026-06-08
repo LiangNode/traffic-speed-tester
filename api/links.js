@@ -1,4 +1,4 @@
-import { json } from './_utils.js';
+import { allowMethods, json } from './_utils.js';
 
 const links = [
   { name: 'CacheFly 10MB', url: 'https://cachefly.cachefly.net/10mb.test', category: '直链下载', desc: '国际 CDN 10MB 测试文件，适合浏览器下载测速参考', tags: ['10MB', 'CDN', '下载'] },
@@ -9,5 +9,6 @@ const links = [
 ];
 
 export default function handler(req, res) {
+  if (!allowMethods(req, res, ['GET', 'HEAD'])) return;
   json(res, { links });
 }
