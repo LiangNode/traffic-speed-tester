@@ -52,13 +52,9 @@ Install Command: npm install
 
 部署完成后即可访问测速页面。
 
-## 关于大文件测速
+## 测速源说明
 
-本项目后续以 Vercel 为主，因此已经删除 50MB / 100MB 这类本机动态大文件选项。
-
-原因：Vercel Serverless 不适合长时间、大体积动态文件输出，容易遇到函数时长、响应大小或边缘网络策略限制。
-
-当前本机源仅保留：
+当前本机源保留：
 
 - 本机 1MB 测试包
 - 本机 4MB 测试包
@@ -67,7 +63,7 @@ Install Command: npm install
 
 - 外部 CORS 可读测试源
 - 自定义测试文件地址
-- 专门的对象存储 / CDN 静态大文件
+- 专门的对象存储 / CDN 静态测试文件
 
 自定义地址需要允许浏览器跨域读取：
 
@@ -144,7 +140,7 @@ Docker / Node 自托管额外保留：
 │   └── server.js           # Docker / Node 自托管服务
 ├── deploy/                 # Docker 部署文件
 ├── docs/                   # 产品、架构、实现说明
-├── public/                 # Vercel 输出目录
+├── public/                 # Vercel 构建输出目录，部署时自动生成
 ├── scripts/                # 辅助脚本
 ├── package.json            # 仓库根 package
 └── vercel.json             # Vercel 部署配置
