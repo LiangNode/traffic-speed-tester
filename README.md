@@ -4,7 +4,9 @@
 
 ![Traffic Speed Tester](docs/preview-note.svg)
 
-> 在线 Demo：<a href="https://tst.vsse.net/" target="_blank" rel="noopener noreferrer">https://tst.vsse.net/</a>
+> 在线 Demo：[https://tst.vsse.net/](https://tst.vsse.net/)
+>
+> 说明：GitHub README 会忽略链接的 `target="_blank"`，如需新标签页打开，请使用 Ctrl/⌘ + 点击或鼠标中键。
 
 ## 项目简介
 
