@@ -9,6 +9,7 @@ const I18N = {
     networkDesc: '访客 IP，从访客浏览器侧探测国内 / 国外常用网站访问耗时。',
     refreshLatency: '刷新延时',
     refreshing: '刷新中…',
+    updating: '更新中',
     visitorIp: '访客 IP',
     loadingIp: '查询中…',
     loadingMeta: '正在查询归属地和运营商',
@@ -76,6 +77,7 @@ const I18N = {
     networkDesc: 'Visitor IP, with browser-side latency checks for common China and global websites.',
     refreshLatency: 'Refresh latency',
     refreshing: 'Refreshing…',
+    updating: 'Updating',
     visitorIp: 'Visitor IP',
     loadingIp: 'Loading…',
     loadingMeta: 'Looking up location and ISP',
@@ -156,6 +158,7 @@ const savedLang = localStorage.getItem('tst-lang');
 let lang = savedLang || ((navigator.language || '').toLowerCase().startsWith('zh') ? 'zh' : 'en');
 let siteLatencyRefreshing = false;
 let siteLatencyTimer = null;
+let lastLatencyResults = new Map();
 
 const state = {
   running: false,
@@ -213,7 +216,7 @@ function applyLanguage(nextLang = lang, options = {}) {
 
   if (!state.running && $('status').textContent !== t('reached')) $('status').textContent = t('idle');
   if (!$('siteLatencyGrid').dataset.ready) $('siteLatencyGrid').innerHTML = `<div class="empty-line">${t('latencyLoading')}</div>`;
-  renderLatencySkeleton();
+  updateLatencyLabels();
   drawChart();
   if (!options.skipIp) loadIp();
 }
@@ -229,7 +232,7 @@ function gradeLatency(ms) {
 function renderLatencySkeleton() {
   const groups = ['domestic', 'global'];
   $('siteLatencyGrid').innerHTML = groups.map(type => `
-    <div class="latency-group ${type}">
+    <div class="latency-group ${type}" data-latency-group="${type}">
       <div class="latency-group-head">
         <div>
           <span>${I18N[lang].groups[type]}</span>
@@ -238,21 +241,74 @@ function renderLatencySkeleton() {
         <b>${type === 'domestic' ? t('domestic') : t('global')}</b>
       </div>
       <div class="latency-sites">
-        ${siteTargets.filter(x => x.type === type).map(target => `
-          <article class="site-card pending" id="site-${siteTargets.indexOf(target)}">
-            <div class="site-card-top">
-              <span>${targetName(target)}</span>
-              <i>${t('probing')}</i>
-            </div>
-            <strong>-- ms</strong>
-            <div class="latency-bar"><span style="width:18%"></span></div>
-            <em>${routeName(type)}</em>
-          </article>
-        `).join('')}
+        ${siteTargets.filter(x => x.type === type).map(target => {
+          const index = siteTargets.indexOf(target);
+          return `
+            <article class="site-card pending" id="site-${index}">
+              <div class="site-card-top">
+                <span data-role="site-name">${targetName(target)}</span>
+                <i data-role="site-status">${t('probing')}</i>
+              </div>
+              <strong data-role="site-value">-- ms</strong>
+              <div class="latency-bar"><span data-role="site-bar" style="width:18%"></span></div>
+              <em data-role="site-note">${routeName(type)}</em>
+            </article>
+          `;
+        }).join('')}
       </div>
     </div>
   `).join('');
   $('siteLatencyGrid').dataset.ready = '1';
+}
+
+function updateLatencyLabels() {
+  if (!$('siteLatencyGrid').dataset.ready) return;
+  document.querySelectorAll('[data-latency-group]').forEach(groupEl => {
+    const type = groupEl.dataset.latencyGroup;
+    const head = groupEl.querySelector('.latency-group-head');
+    if (!head) return;
+    const small = head.querySelector('span');
+    const title = head.querySelector('h3');
+    const badge = head.querySelector('b');
+    if (small) small.textContent = I18N[lang].groups[type];
+    if (title) title.textContent = groupName(type);
+    if (badge) badge.textContent = type === 'domestic' ? t('domestic') : t('global');
+  });
+  siteTargets.forEach((target, index) => {
+    const card = document.getElementById(`site-${index}`);
+    if (!card) return;
+    const nameEl = card.querySelector('[data-role="site-name"]');
+    if (nameEl) nameEl.textContent = targetName(target);
+    const previous = lastLatencyResults.get(index);
+    updateLatencyCard(index, previous, { relabelOnly: true });
+  });
+}
+
+function updateLatencyCard(index, result, options = {}) {
+  const target = siteTargets[index];
+  const card = document.getElementById(`site-${index}`);
+  if (!card) return;
+  const statusEl = card.querySelector('[data-role="site-status"]');
+  const valueEl = card.querySelector('[data-role="site-value"]');
+  const barEl = card.querySelector('[data-role="site-bar"]');
+  const noteEl = card.querySelector('[data-role="site-note"]');
+
+  if (!result) {
+    card.className = 'site-card pending';
+    if (statusEl) statusEl.textContent = options.relabelOnly ? t('probing') : t('updating');
+    if (valueEl) valueEl.textContent = '-- ms';
+    if (barEl) barEl.style.width = '18%';
+    if (noteEl) noteEl.textContent = routeName(target.type);
+    return;
+  }
+
+  const grade = gradeLatency(result.ms);
+  card.className = `site-card ${grade.cls}`;
+  const width = result.ok ? Math.max(8, Math.min(100, 100 - (result.ms / 500) * 100)) : 100;
+  if (statusEl) statusEl.textContent = grade.label;
+  if (valueEl) valueEl.textContent = result.ok ? `${result.ms} ms` : t('fail');
+  if (barEl) barEl.style.width = `${width}%`;
+  if (noteEl) noteEl.textContent = result.ok ? t('browserProbe') : t('probeFailed');
 }
 
 async function probeSite(target, timeoutMs = 4500) {
@@ -274,31 +330,21 @@ function formatRefreshTime() {
   return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}:${String(d.getSeconds()).padStart(2, '0')}`;
 }
 
-async function loadSiteLatency() {
+async function loadSiteLatency({ initial = false } = {}) {
   if (siteLatencyRefreshing) return;
   siteLatencyRefreshing = true;
   $('refreshSiteLatency').disabled = true;
   $('refreshSiteLatency').textContent = t('refreshing');
-  renderLatencySkeleton();
-  $('siteLatencyAvg').textContent = t('probing');
+  if (!$('siteLatencyGrid').dataset.ready || initial) renderLatencySkeleton();
+  if (!lastLatencyResults.size) $('siteLatencyAvg').textContent = t('probing');
+
   const results = await Promise.all(siteTargets.map(async (target, index) => {
     const result = await probeSite(target);
-    const card = document.getElementById(`site-${index}`);
-    const grade = gradeLatency(result.ms);
-    if (card) {
-      card.className = `site-card ${grade.cls}`;
-      const width = result.ok ? Math.max(8, Math.min(100, 100 - (result.ms / 500) * 100)) : 100;
-      const statusEl = card.querySelector('.site-card-top i');
-      const valueEl = card.querySelector('strong');
-      const barEl = card.querySelector('.latency-bar span');
-      const noteEl = card.querySelector('em');
-      if (statusEl) statusEl.textContent = grade.label;
-      if (valueEl) valueEl.textContent = result.ok ? `${result.ms} ms` : t('fail');
-      if (barEl) barEl.style.width = `${width}%`;
-      if (noteEl) noteEl.textContent = result.ok ? t('browserProbe') : t('probeFailed');
-    }
+    lastLatencyResults.set(index, result);
+    updateLatencyCard(index, result);
     return result;
   }));
+
   const ok = results.map(x => x.ms).filter(Number.isFinite);
   $('siteLatencyAvg').textContent = ok.length ? `${Math.round(ok.reduce((a, b) => a + b, 0) / ok.length)} ms` : t('allFailed');
   $('refreshSiteLatency').disabled = false;
@@ -307,9 +353,9 @@ async function loadSiteLatency() {
 }
 
 function startSiteLatencyAutoRefresh() {
-  loadSiteLatency();
+  loadSiteLatency({ initial: true });
   clearInterval(siteLatencyTimer);
-  siteLatencyTimer = setInterval(loadSiteLatency, 5000);
+  siteLatencyTimer = setInterval(() => loadSiteLatency(), 5000);
 }
 
 function formatBytes(bytes) {
